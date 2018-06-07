@@ -23,7 +23,7 @@ window.renderStatistics = function (ctx, names, times) {
   var PLAYER_NAME = 'Вы';
   var PLAYER_COLOR = 'rgba(255, 0, 0, 1)';
 
-  var renderCloud = function (x, y, width, height, color) {
+  function renderCloud(x, y, width, height, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -37,9 +37,9 @@ window.renderStatistics = function (ctx, names, times) {
     ctx.lineTo(x, y);
     ctx.closePath();
     ctx.fill();
-  };
+  }
 
-  var renderText = function (text) {
+  function renderText(text) {
     var lines = text.split('\n');
     ctx.fillStyle = FONT_COLOR;
     ctx.textBaseline = 'top';
@@ -47,25 +47,25 @@ window.renderStatistics = function (ctx, names, times) {
     for (var i = 0; i < lines.length; i++) {
       ctx.fillText(lines[i], CLOUD_X + TEXT_OFFSET, CLOUD_Y + TEXT_OFFSET + FONT_SIZE * i);
     }
-  };
+  }
 
-  var renderGraph = function () {
+  function renderGraph() {
     var validScore = Math.min(names.length, times.length, MAX_COLUMNS);
     var topScore = 0;
     var columns = [];
     var columnsMaxHeight = GRAPH_HEIGHT - 2 * LINE_HEIGHT;
 
-    var getColumnColor = function (player) {
+    function getColumnColor(player) {
       return player === PLAYER_NAME ? PLAYER_COLOR : 'hsl(240, ' + Math.round(Math.random() * 100) + '%, 50%)';
-    };
+    }
 
-    var addColumnData = function (array, index) {
+    function addColumnData(array, index) {
       array.push({
         name: names[index],
         score: Math.round(times[index]),
         color: getColumnColor(names[index])
       });
-    };
+    }
 
     for (var i = 0; i < validScore; i++) {
       addColumnData(columns, i);
@@ -74,7 +74,7 @@ window.renderStatistics = function (ctx, names, times) {
 
     var columnMultiplier = columnsMaxHeight / topScore;
 
-    var renderColumn = function (j) {
+    function renderColumn(j) {
       var columnHeight = Math.round(columns[j].score * columnMultiplier);
       var columnOffsetX = CLOUD_X + ((CLOUD_WIDTH - columns.length * (COLUMN_WIDTH + COLUMN_GAP_X) + COLUMN_GAP_X) / 2 + j * (COLUMN_WIDTH + COLUMN_GAP_X));
       var columnOffsetY = CLOUD_Y + CLOUD_HEIGHT - columnHeight - 2 * LINE_HEIGHT - COLUMN_GAP_Y;
@@ -85,12 +85,12 @@ window.renderStatistics = function (ctx, names, times) {
       ctx.fillText(columns[j].name, columnOffsetX, CLOUD_HEIGHT + CLOUD_Y - COLUMN_GAP_Y);
       ctx.fillStyle = columns[j].color;
       ctx.fillRect(columnOffsetX, columnOffsetY + LINE_HEIGHT, COLUMN_WIDTH, columnHeight);
-    };
+    }
 
     for (i = 0; i < columns.length; i++) {
       renderColumn(i);
     }
-  };
+  }
 
   renderCloud(CLOUD_X + SHADOW_OFFSET, CLOUD_Y + SHADOW_OFFSET, CLOUD_WIDTH, CLOUD_HEIGHT, SHADOW_COLOR);
   renderCloud(CLOUD_X, CLOUD_Y, CLOUD_WIDTH, CLOUD_HEIGHT, CLOUD_COLOR);
