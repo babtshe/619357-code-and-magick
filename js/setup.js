@@ -6,15 +6,7 @@
   var ENTER_KEYCODE = 13;
   var blockTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
   var setupBlock = document.querySelector('.setup');
-  var setupInputName = document.querySelector('.setup-user-name');
-  var setupCoat = document.getElementsByName('coat-color')[0];
-  var coatColor = document.querySelector('.setup-wizard .wizard-coat');
-  var setupEyes = document.getElementsByName('eyes-color')[0];
-  var eyesColor = document.querySelector('.setup-wizard .wizard-eyes');
-  var setupFireball = document.getElementsByName('fireball-color')[0];
-  var fireballColor = document.querySelector('.setup-fireball-wrap');
   var setupOpen = document.querySelector('.setup-open');
-  var setupClose = document.querySelector('.setup-close');
   var similarListElement = setupBlock.querySelector('.setup-similar-list');
   var similarList = setupBlock.querySelector('.setup-similar');
   var names = {
@@ -46,6 +38,45 @@
         showSetup();
       }
     });
+  }
+
+  function renderSimilarList() {
+    var fragment = document.createDocumentFragment();
+
+    createWizardsData();
+
+    for (var i = 0; i < wizardsData.length; i++) {
+      fragment.appendChild(createWizardBlock(wizardsData[i]));
+    }
+    similarListElement.appendChild(fragment);
+  }
+
+  function changeColor(arr, field, item) {
+    var currentColor = field.value;
+    if (arr.indexOf(currentColor) === arr.length - 1) {
+      field.value = arr[0];
+    } else {
+      field.value = arr[arr.indexOf(currentColor) + 1];
+    }
+    if (item.tagName === 'DIV') {
+      item.style.backgroundColor = field.value;
+    } else {
+      item.style.fill = field.value;
+    }
+
+  }
+
+  function showSetup() {
+    var setupInputName = document.querySelector('.setup-user-name');
+    var setupCoat = document.querySelector('input[name="coat-color"]');
+    var coatColor = document.querySelector('.setup-wizard .wizard-coat');
+    var setupEyes = document.querySelector('input[name="eyes-color"]');
+    var eyesColor = document.querySelector('.setup-wizard .wizard-eyes');
+    var setupFireball = document.querySelector('input[name="fireball-color"');
+    var fireballColor = document.querySelector('.setup-fireball-wrap');
+    var setupClose = document.querySelector('.setup-close');
+    setupBlock.classList.remove('hidden');
+    document.addEventListener('keydown', onSetupEscPress);
 
     setupClose.addEventListener('click', function () {
       hideSetup();
@@ -76,40 +107,12 @@
     });
   }
 
-  function renderSimilarList() {
-    var fragment = document.createDocumentFragment();
-
-    createWizardsData();
-
-    for (var i = 0; i < wizardsData.length; i++) {
-      fragment.appendChild(createWizardBlock(wizardsData[i]));
-    }
-    similarListElement.appendChild(fragment);
-  }
-
-  function changeColor(arr, field, item) {
-    var currentColor = field.value;
-    if (arr.indexOf(currentColor) === arr.length - 1) {
-      field.value = arr[0];
-    } else {
-      field.value = arr[arr.indexOf(currentColor) + 1];
-    }
-    if (item.tagName === 'DIV') {
-      item.style.backgroundColor = field.value;
-    } else {
-      item.style.fill = field.value;
-    }
-
-  }
-
-  function showSetup() {
-    setupBlock.classList.remove('hidden');
-    document.addEventListener('keydown', onSetupEscPress);
-  }
-
   function hideSetup() {
     setupBlock.classList.add('hidden');
     document.removeEventListener('keydown', onSetupEscPress);
+    var cleanSetup = setupBlock.cloneNode(true);
+    setupBlock.parentNode.replaceChild(cleanSetup, setupBlock);
+    setupBlock = cleanSetup;
   }
 
   function onSetupEscPress(evt) {
