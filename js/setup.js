@@ -9,6 +9,14 @@
   var setupOpen = document.querySelector('.setup-open');
   var similarListElement = setupBlock.querySelector('.setup-similar-list');
   var similarList = setupBlock.querySelector('.setup-similar');
+  var setupInputName = document.querySelector('.setup-user-name');
+  var setupCoat = document.querySelector('input[name="coat-color"]');
+  var coatColor = document.querySelector('.setup-wizard .wizard-coat');
+  var setupEyes = document.querySelector('input[name="eyes-color"]');
+  var eyesColor = document.querySelector('.setup-wizard .wizard-eyes');
+  var setupFireball = document.querySelector('input[name="fireball-color"');
+  var fireballColor = document.querySelector('.setup-fireball-wrap');
+  var setupClose = document.querySelector('.setup-close');
   var names = {
     neutral: [],
     male: ['Иван', 'Хуан Себастьян', 'Кристоф', 'Виктор', 'Вашингтон'],
@@ -67,58 +75,59 @@
   }
 
   function showSetup() {
-    var setupInputName = document.querySelector('.setup-user-name');
-    var setupCoat = document.querySelector('input[name="coat-color"]');
-    var coatColor = document.querySelector('.setup-wizard .wizard-coat');
-    var setupEyes = document.querySelector('input[name="eyes-color"]');
-    var eyesColor = document.querySelector('.setup-wizard .wizard-eyes');
-    var setupFireball = document.querySelector('input[name="fireball-color"');
-    var fireballColor = document.querySelector('.setup-fireball-wrap');
-    var setupClose = document.querySelector('.setup-close');
     setupBlock.classList.remove('hidden');
     document.addEventListener('keydown', onSetupEscPress);
-
-    setupClose.addEventListener('click', function () {
-      hideSetup();
-    });
-
-    setupClose.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        hideSetup();
-      }
-    });
-
-    setupInputName.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        evt.stopPropagation();
-      }
-    });
-
-    coatColor.addEventListener('click', function () {
-      changeColor(coatColors, setupCoat, coatColor);
-    });
-
-    eyesColor.addEventListener('click', function () {
-      changeColor(eyesColors, setupEyes, eyesColor);
-    });
-
-    fireballColor.addEventListener('click', function () {
-      changeColor(fireballColors, setupFireball, fireballColor);
-    });
+    setupClose.addEventListener('click', onSetupCloseClick);
+    setupClose.addEventListener('keydown', onSetupCloseEnterPress);
+    setupInputName.addEventListener('keydown', onSetupInputNameEscPress);
+    coatColor.addEventListener('click', onCoatClick);
+    eyesColor.addEventListener('click', onEyesClick);
+    fireballColor.addEventListener('click', onFireballClick);
   }
 
   function hideSetup() {
     setupBlock.classList.add('hidden');
     document.removeEventListener('keydown', onSetupEscPress);
-    var cleanSetup = setupBlock.cloneNode(true);
-    setupBlock.parentNode.replaceChild(cleanSetup, setupBlock);
-    setupBlock = cleanSetup;
+    setupClose.removeEventListener('click', onSetupCloseClick);
+    setupClose.removeEventListener('keydown', onSetupCloseEnterPress);
+    setupInputName.removeEventListener('keydown', onSetupInputNameEscPress);
+    coatColor.removeEventListener('click', onCoatClick);
+    eyesColor.removeEventListener('click', onEyesClick);
+    fireballColor.removeEventListener('click', onFireballClick);
   }
 
   function onSetupEscPress(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       hideSetup();
     }
+  }
+
+  function onSetupCloseClick() {
+    hideSetup();
+  }
+
+  function onSetupCloseEnterPress(evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      hideSetup();
+    }
+  }
+
+  function onSetupInputNameEscPress(evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      evt.stopPropagation();
+    }
+  }
+
+  function onCoatClick() {
+    changeColor(coatColors, setupCoat, coatColor);
+  }
+
+  function onEyesClick() {
+    changeColor(eyesColors, setupEyes, eyesColor);
+  }
+
+  function onFireballClick() {
+    changeColor(fireballColors, setupFireball, fireballColor);
   }
 
   function showSimilar() {
