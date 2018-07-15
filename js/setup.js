@@ -76,6 +76,7 @@
 
   function showSetup() {
     setupBlock.classList.remove('hidden');
+    setupBlock.removeAttribute('style');
     document.addEventListener('keydown', onSetupEscPress);
     setupClose.addEventListener('click', onSetupCloseClick);
     setupClose.addEventListener('keydown', onSetupCloseEnterPress);
