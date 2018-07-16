@@ -1,9 +1,58 @@
 'use strict';
 (function () {
-  var dialogBlock = document.querySelector('.setup');
-  var userPicBlock = dialogBlock.querySelector('.upload');
+  var setupBlock = document.querySelector('.setup');
+  var userPicBlock = setupBlock.querySelector('.upload');
+  var setupOpen = document.querySelector('.setup-open');
+  var setupClose = document.querySelector('.setup-close');
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
 
-  dragBlock(userPicBlock, dialogBlock);
+  (function addSetupListeners() {
+    setupOpen.addEventListener('click', function () {
+      showSetup();
+    });
+
+    setupOpen.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        showSetup();
+      }
+    });
+  })();
+
+  function showSetup() {
+    setupBlock.classList.remove('hidden');
+    setupBlock.removeAttribute('style');
+    document.addEventListener('keydown', onSetupEscPress);
+    setupClose.addEventListener('click', onSetupCloseClick);
+    setupClose.addEventListener('keydown', onSetupCloseEnterPress);
+    window.setup.activate();
+  }
+
+  function hideSetup() {
+    setupBlock.classList.add('hidden');
+    document.removeEventListener('keydown', onSetupEscPress);
+    setupClose.removeEventListener('click', onSetupCloseClick);
+    setupClose.removeEventListener('keydown', onSetupCloseEnterPress);
+    window.setup.deactivate();
+  }
+
+  function onSetupEscPress(evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      hideSetup();
+    }
+  }
+
+  function onSetupCloseClick() {
+    hideSetup();
+  }
+
+  function onSetupCloseEnterPress(evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      hideSetup();
+    }
+  }
+
+  dragBlock(userPicBlock, setupBlock);
 
   function dragBlock(activator, block) {
     activator.addEventListener('mousedown', onMouseDown);
