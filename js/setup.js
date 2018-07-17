@@ -5,6 +5,7 @@
   var WIZARDS_COUNT = 4;
   var blockTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
   var setupBlock = document.querySelector('.setup');
+  var form = document.querySelector('.setup-wizard-form');
   var similarListElement = setupBlock.querySelector('.setup-similar-list');
   var similarList = setupBlock.querySelector('.setup-similar');
   var setupInputName = document.querySelector('.setup-user-name');
@@ -14,20 +15,9 @@
   var eyesColor = document.querySelector('.setup-wizard .wizard-eyes');
   var setupFireball = document.querySelector('input[name="fireball-color"');
   var fireballColor = document.querySelector('.setup-fireball-wrap');
-  var names = {
-    neutral: [],
-    male: ['Иван', 'Хуан Себастьян', 'Кристоф', 'Виктор', 'Вашингтон'],
-    female: ['Мария', 'Юлия', 'Люпита']
-  };
-  var surnames = {
-    neutral: ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Нионго', 'Ирвинг'],
-    male: [],
-    female: ['Топольницкая']
-  };
   var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
   var eyesColors = ['black', 'red', 'blue', 'yellow', 'green'];
   var fireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
-  var wizardsData = [];
 
   window.setup = {
     activate: function () {
@@ -38,21 +28,33 @@
     }
   };
 
-  renderSimilarList();
   showSimilar();
 
-  function renderSimilarList() {
+  function renderSimilarList(wizards) {
+    similarListElement.innerHTML = '';
+    var counter = (WIZARDS_COUNT >= wizards.length) ? wizards.length : WIZARDS_COUNT;
     var fragment = document.createDocumentFragment();
-
-    createWizardsData();
-
-    for (var i = 0; i < wizardsData.length; i++) {
-      fragment.appendChild(createWizardBlock(wizardsData[i]));
+    for (var i = 0; i < counter; i++) {
+      fragment.appendChild(createWizardBlock(wizards[i]));
     }
     similarListElement.appendChild(fragment);
   }
 
+  function errorHandler(errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  }
+
   function activateForm() {
+    window.backend.load(renderSimilarList, errorHandler);
+    form.addEventListener('submit', onFormSubmit);
     setupInputName.addEventListener('keydown', onSetupInputNameEscPress);
     coatColor.addEventListener('click', onCoatClick);
     eyesColor.addEventListener('click', onEyesClick);
@@ -60,6 +62,7 @@
   }
 
   function deactivateForm() {
+    form.removeEventListener('submit', onFormSubmit);
     setupInputName.removeEventListener('keydown', onSetupInputNameEscPress);
     coatColor.removeEventListener('click', onCoatClick);
     eyesColor.removeEventListener('click', onEyesClick);
@@ -84,24 +87,21 @@
     window.library.changeColor(fireballColors, setupFireball, fireballColor);
   }
 
+  function onFormSubmit(evt) {
+    window.backend.save(new FormData(form), function () {
+      window.dialog.hide();
+    }, errorHandler);
+    evt.preventDefault();
+  }
+
   function showSimilar() {
     similarList.classList.remove('hidden');
   }
 
-  function createWizardsData() {
-    for (var i = 0; i < WIZARDS_COUNT; i++) {
-      wizardsData.push({
-        name: window.library.getRandomName(names, surnames),
-        coatColor: window.library.getRandomValue(coatColors),
-        eyesColor: window.library.getRandomValue(eyesColors)
-      });
-    }
-  }
-
   function createWizardBlock(wizard) {
     var wizardBlock = blockTemplate.cloneNode(true);
-    wizardBlock.querySelector('.wizard-coat').style.fill = wizard.coatColor;
-    wizardBlock.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
+    wizardBlock.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
+    wizardBlock.querySelector('.wizard-eyes').style.fill = wizard.colorEyes;
     wizardBlock.querySelector('.setup-similar-label').textContent = wizard.name;
 
     return wizardBlock;
