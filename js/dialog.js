@@ -7,6 +7,12 @@
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
 
+  window.dialog = {
+    hide: function () {
+      hideSetup();
+    }
+  };
+
   (function addSetupListeners() {
     setupOpen.addEventListener('click', function () {
       showSetup();
