@@ -2,12 +2,7 @@
 
 (function () {
   var ESC_KEYCODE = 27;
-  var WIZARDS_COUNT = 4;
-  var blockTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
-  var setupBlock = document.querySelector('.setup');
   var form = document.querySelector('.setup-wizard-form');
-  var similarListElement = setupBlock.querySelector('.setup-similar-list');
-  var similarList = setupBlock.querySelector('.setup-similar');
   var setupInputName = document.querySelector('.setup-user-name');
   var setupCoat = document.querySelector('input[name="coat-color"]');
   var coatColor = document.querySelector('.setup-wizard .wizard-coat');
@@ -28,32 +23,8 @@
     }
   };
 
-  showSimilar();
-
-  function renderSimilarList(wizards) {
-    similarListElement.innerHTML = '';
-    var counter = (WIZARDS_COUNT >= wizards.length) ? wizards.length : WIZARDS_COUNT;
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < counter; i++) {
-      fragment.appendChild(createWizardBlock(wizards[i]));
-    }
-    similarListElement.appendChild(fragment);
-  }
-
-  function errorHandler(errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
-  }
-
   function activateForm() {
-    window.backend.load(renderSimilarList, errorHandler);
+    window.similar.render(getCurrentWizard());
     form.addEventListener('submit', onFormSubmit);
     setupInputName.addEventListener('keydown', onSetupInputNameEscPress);
     coatColor.addEventListener('click', onCoatClick);
@@ -69,6 +40,13 @@
     fireballColor.removeEventListener('click', onFireballClick);
   }
 
+  function getCurrentWizard() {
+    return {
+      colorCoat: setupCoat.value,
+      colorEyes: setupEyes.value
+    };
+  }
+
   function onSetupInputNameEscPress(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       evt.stopPropagation();
@@ -77,34 +55,29 @@
 
   function onCoatClick() {
     window.library.changeColor(coatColors, setupCoat, coatColor);
+    window.setup.onColorChange();
   }
+
+  window.setup.onColorChange = window.library.debounce(function () {
+    window.similar.render(getCurrentWizard());
+  });
 
   function onEyesClick() {
     window.library.changeColor(eyesColors, setupEyes, eyesColor);
+    window.setup.onColorChange();
   }
 
   function onFireballClick() {
     window.library.changeColor(fireballColors, setupFireball, fireballColor);
   }
 
+
   function onFormSubmit(evt) {
     window.backend.save(new FormData(form), function () {
       window.dialog.hide();
-    }, errorHandler);
+    }, window.library.errorHandler);
     evt.preventDefault();
   }
 
-  function showSimilar() {
-    similarList.classList.remove('hidden');
-  }
-
-  function createWizardBlock(wizard) {
-    var wizardBlock = blockTemplate.cloneNode(true);
-    wizardBlock.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
-    wizardBlock.querySelector('.wizard-eyes').style.fill = wizard.colorEyes;
-    wizardBlock.querySelector('.setup-similar-label').textContent = wizard.name;
-
-    return wizardBlock;
-  }
 })();
 

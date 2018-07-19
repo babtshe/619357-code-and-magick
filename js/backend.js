@@ -10,16 +10,18 @@
     }
   };
 
+  var STATUS_OK = 200;
+
   function loadData(onLoad, onError) {
     var URL = 'https://js.dump.academy/code-and-magick/data';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_OK) {
         onLoad(xhr.response);
       } else {
-        onError('Всё сломалось: ' + xhr.status + ' ' + xhr.statusText);
+        onError(xhr.status + ' ' + xhr.statusText);
       }
     });
 
@@ -28,20 +30,21 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + 'секунд.');
+      onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + 'сек.');
     });
 
+    xhr.timeout = 5000;
     xhr.open('GET', URL);
     xhr.send();
   }
 
   function saveData(data, onLoad, onError) {
-    var URL = 'https://js.dump.academy/code-and-magick1';
+    var URL = 'https://js.dump.academy/code-and-magick';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_OK) {
         onLoad(xhr.response);
       } else {
         onError('Всё сломалось: ' + xhr.status + ' ' + xhr.statusText);
